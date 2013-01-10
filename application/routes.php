@@ -94,9 +94,6 @@ Route::post('upload/(:all)', function($guid) {
 		result(false, 'Error while uploading Info.plist file');
 	}
 
-	# convert to old xml style
-	system("plutil -convert xml1 ${data_dir}info.plist");
-
 	# read data from Info.plist
 	$plist = new InfoPlist($data_dir . 'Info.plist');
 	if (!$plist->processed()) {
