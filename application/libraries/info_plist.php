@@ -12,7 +12,7 @@ class InfoPlist
 	public $bundle_id = '';
 	public $display_name = '';
 
-	const VERSION_KEY = 'CFBundleShortVersionString';
+	const VERSION_KEY = 'CFBundleVersion';
 	const BUNDLE_ID_KEY = 'CFBundleIdentifier';
 	const DISPLAY_NAME_KEY = 'CFBundleDisplayName';
 
@@ -30,12 +30,15 @@ class InfoPlist
 
 	private function readfile()
 	{
-		$xml = simplexml_load_file($this->file);
-		$keys = (array)$xml->dict->key;
-		$values = (array)$xml->dict->string;
+		$xml = new DOMDocument('1.0', 'UTF8');
+		$xml->load($this->file);
+
+		$xpath = new DOMXPath($xml);
 		foreach ($this->parse_options as $var_name => $option_key) {
-			$index = array_search($option_key, $keys);
-			$this->{$var_name} = (string)$values[$index];
+			$node = $xpath->query('//key[contains(., "'. $option_key .'")]/following-sibling::string');
+			if ($node->length > 0) {
+				$this->{$var_name} = $node->item(0)->nodeValue;
+			}
 		}
 
 		$this->processed = true;
