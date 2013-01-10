@@ -16,6 +16,9 @@ class Create_Applications_Table {
 			$table->string('name');
 			$table->string('profile_identity')->nullable();
 			$table->string('guid');
+			$table->string('info_bundle_id');
+			$table->string('info_version');
+			$table->string('info_display_name');
 			$table->boolean('has_dist_build')->default(false);
 			$table->timestamps();
 			$table->foreign('user_id')->references('id')->on('users');

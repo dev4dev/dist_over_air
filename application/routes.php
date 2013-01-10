@@ -32,46 +32,107 @@
 |
 */
 
+function result($status, $message = '')
+{
+	die(json_encode([
+		'result' => $status,
+		'message' => $message
+	]));
+}
+
 Route::get('/', function()
 {
+	$apps = Application::all();
 	return View::make('home.index', [
-		'title' => 'Distribute Over Air'
+		'title' => 'Distribute Over Air',
+		'apps' => $apps
 	]);
 });
+
+Route::get('app/(:all)/download', ['as' => 'download', function($guid){
+	$app = Application::where_guid($guid)->first();
+	return View::make('home.download', [
+		'title' => 'Download "'. $app->name .'" - DOA',
+		'app' => $app
+	]);
+}]);
 
 Route::post('upload/(:all)', function($guid) {
 	# get app by guid
 	$app = Application::where_guid($guid)->first();
-	echo $app->name;
+	if (!$app) {
+		result(false, 'Wrong app guid');
+	}
 
-	# get data from Info.plist
+	$data_dir = path('public') . 'files/' . $app->guid . '/';
+	if (!file_exists($data_dir)) {
+		mkdir($data_dir, 0777, true);
+	}
+
+	# Info.plist
+	$info_file = Input::file('info');
+	if (!$info_file) {
+		result(false, 'No Info.plist file');
+	}
+
+	# store Info.plist
+	try {
+		Input::upload('info', $data_dir, 'Info.plist');
+	} catch (Exception $e) {
+		result(false, 'Error while uploading Info.plist file');
+	}
+
+	# convert to old xml style
+	system("plutil -convert xml1 ${data_dir}info.plist");
+
+	# read data from Info.plist
+	$plist = new InfoPlist($data_dir . 'Info.plist');
+	if (!$plist->processed()) {
+		result(false, 'Error reading data from Info.plist');
+	}
+	$app->info_bundle_id = $plist->bundle_id;
+	$app->info_display_name = $plist->display_name;
+	$app->info_version = $plist->version;
+	$app->save();
+
+	# IPA
+	$ipa_file = Input::file('ipa');
+	if (!$ipa_file) {
+		result(false, 'No .ipa file');
+	}
 
 	# store IPA file
+	try {
+		Input::upload('ipa', $data_dir, 'app.ipa');
+	} catch (Exception $e) {
+		result(false, 'Error while uploading .ipa file');
+	}
 
 	# return 'OK'
+	result(true);
 });
 
 Route::get('test', function() {
-	// $user = User::create([
-	// 	'username' => 'admin',
-	// 	'password' => Hash::make('123')
-	// ]);
+	$user = User::find(1);
 
-	// $app = Application::create([
-	// 	'user_id' => $user->id,
-	// 	'name' => 'Test App',
-	// 	'guid' => Hash::make(time())
-	// ]);
+	if (!$user) {
+		$user = User::create([
+			'username' => 'admin',
+			'password' => Hash::make('123')
+			]);
+	}
 
-	// $user = User::find(1);
+	Application::create([
+		'user_id' => $user->id,
+		'name' => 'My App',
+		'guid' => md5(microtime())
+	]);
 
-	// foreach ($user->applications as $app) {
-	// 	echo $app->name . "<br />";
-	// }
-
-	// $app = Application::find(1);
-	// echo $app->user->username;
-
+	Application::create([
+		'user_id' => $user->id,
+		'name' => 'Test App',
+		'guid' => md5(microtime())
+	]);
 });
 
 /*
