@@ -57,6 +57,17 @@ Route::get('app/(:all)/download', ['as' => 'download', function($guid){
 	]);
 }]);
 
+Route::get('manifest/(:all)', ['as' => 'manifest', function($guid){
+	$app = Application::where_guid($guid)->first();
+	if (!$app) {
+		return Response::error('404');
+	}
+
+	return View::make('home.manifest', [
+		'app' => $app
+	]);
+}]);
+
 Route::post('upload/(:all)', function($guid) {
 	header('Content-type: application/json');
 	# get app by guid
@@ -114,6 +125,10 @@ Route::post('upload/(:all)', function($guid) {
 });
 
 Route::get('test', function() {
+
+});
+
+Route::get('dummy_data', function() {
 	$user = User::find(1);
 
 	if (!$user) {
