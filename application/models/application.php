@@ -19,6 +19,15 @@ class Application extends Eloquent
 	{
 		return URL::to_route('manifest', $this->guid);
 	}
+
+	public static function make($user_id, $name)
+	{
+		return self::create([
+			'user_id' => $user_id,
+			'name' => $name,
+			'guid' => md5(microtime())
+		]);
+	}
 }
 
 /**

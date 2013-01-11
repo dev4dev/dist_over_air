@@ -49,29 +49,6 @@ Route::get('test', function() {
 
 });
 
-Route::get('dummy_data', function() {
-	$user = User::find(1);
-
-	if (!$user) {
-		$user = User::create([
-			'username' => 'admin',
-			'password' => Hash::make('123')
-			]);
-	}
-
-	Application::create([
-		'user_id' => $user->id,
-		'name' => 'My App',
-		'guid' => md5(microtime())
-	]);
-
-	Application::create([
-		'user_id' => $user->id,
-		'name' => 'Test App',
-		'guid' => md5(microtime())
-	]);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers
