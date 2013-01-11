@@ -32,7 +32,11 @@ class Home_Controller extends Base_Controller {
 
 	public function action_index()
 	{
-		return View::make('home.index');
+		$apps = Application::all();
+		return View::make('home.index', [
+			'title' => 'Distribute Over Air',
+			'apps' => $apps
+		]);
 	}
 
 }
