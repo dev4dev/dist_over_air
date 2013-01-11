@@ -29,6 +29,14 @@ class Application extends Eloquent
 			'guid' => md5(microtime())
 		]);
 	}
+
+	public function delete()
+	{
+		if ($this->guid) {
+			File::rmdir(path('public') . 'files/' . $this->guid);
+		}
+		parent::delete();
+	}
 }
 
 /**
