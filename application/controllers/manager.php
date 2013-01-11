@@ -30,7 +30,12 @@ class Manager_Controller extends Base_Controller
 		if (!$app_name) {
 			return Redirect::to_action('manager@add')->with('error', 'Write app name');
 		}
-		$app = Application::make(1, $app_name);
+		try {
+			$app = Application::make(1, $app_name);
+		} catch (Exception $e) {
+			return Redirect::to_action('manager@add')->with('error', 'Try another name!');
+		}
+
 		return Redirect::to_action('manager');
 	}
 

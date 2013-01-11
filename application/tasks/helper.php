@@ -29,8 +29,12 @@ class Helper_Task
 	{
 		self::default_admin();
 		$user = User::find(1);
-		Application::make($user->id, 'My App');
-		Application::make($user->id, 'Test App');
+		try {
+			Application::make($user->id, 'My App');
+			Application::make($user->id, 'Test App');
+		} catch (Exception $e) {
+			echo 'oops!: ' . $e->getMessage();
+		}
 	}
 }
 

@@ -17,7 +17,7 @@ class Application extends Eloquent
 
 	public function manifest_url()
 	{
-		return URL::to_route('manifest', $this->guid);
+		return URL::to_route('manifest', $this->slug);
 	}
 
 	public static function make($user_id, $name)
@@ -25,6 +25,7 @@ class Application extends Eloquent
 		return self::create([
 			'user_id' => $user_id,
 			'name' => $name,
+			'slug' => Str::slug($name),
 			'guid' => md5(microtime())
 		]);
 	}

@@ -7,18 +7,18 @@ class Application_Controller extends Base_Controller
 {
 	public $restful = true;
 
-	public function get_download($guid)
+	public function get_download($slug)
 	{
-		$app = Application::where_guid($guid)->first();
+		$app = Application::where_slug($slug)->first();
 		return View::make('home.download', [
 			'title' => 'Download "'. $app->name .'" - DOA',
 			'app' => $app
 		]);
 	}
 
-	public function get_manifest($guid)
+	public function get_manifest($slug)
 	{
-		$app = Application::where_guid($guid)->first();
+		$app = Application::where_slug($slug)->first();
 		if (!$app) {
 			return Response::error('404');
 		}
