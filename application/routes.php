@@ -41,6 +41,7 @@ function result($status, $message = '')
 }
 
 Route::controller('home');
+Route::controller('manager');
 Route::get('app/(:all)/download', ['as' => 'download', 'uses' => 'application@download']);
 Route::get('manifest/(:all)', ['as' => 'manifest', 'uses' => 'application@manifest']);
 Route::post('upload/(:all)', 'application@upload');
