@@ -26,7 +26,8 @@ class Manager_Controller extends Base_Controller
 
 	public function post_add()
 	{
-		$app_name = trim(Input::get('app_name'));
+		$app_name = e(strip_tags(trim(Input::get('app_name'))));
+
 		if (!$app_name) {
 			return Redirect::to_action('manager@add')->with('error', 'Write app name');
 		}
